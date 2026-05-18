@@ -9,19 +9,19 @@ build: clean_executables SSE_FLAGS mrsfast snp_indexer clean_objects
 
 
 LIBS=-lz -lm -pthread -lpthread
-CFLAGS=-fno-pic -DMRSFAST_VERSION=\"$(MRSFAST_VERSION)\" -DBUILD_DATE=\"$(BUILD_DATE)\"
+CFLAGS=-fno-pic -fcommon -DMRSFAST_VERSION=\"$(MRSFAST_VERSION)\" -DBUILD_DATE=\"$(BUILD_DATE)\"
 
 objects=baseFAST.o Sort.o MrsFAST.o Common.o CommandLineParser.o RefGenome.o HashTable.o Reads.o Output.o SNPReader.o  HELP.o
 
 mrsfast: clean_executables $(objects)
 ifeq ($(shell uname -s),Linux)
-	$(CC) -w $(objects) -o $@ ${LDFLAGS} ${LIBS}
+	$(CC) -no-pie -w $(objects) -o $@ ${LDFLAGS} ${LIBS}
 else
 	$(CC) -Wl,-no_pie -fno-pic -w $(objects) -o $@ ${LDFLAGS} ${LIBS}
 endif
 
 snp_indexer: clean_executables SNPIndexer.o
-	$(CC) SNPIndexer.o -o $@ ${LDFLAGS} ${LIBS}
+	$(CC) -no-pie SNPIndexer.o -o $@ ${LDFLAGS} ${LIBS}
 
 clean_objects: mrsfast snp_indexer
 	@rm -f $(objects)
@@ -68,7 +68,7 @@ else
         	$(eval CFLAGS = $(CFLAGS) \
         	$(shell gv=`$(CC) -dumpversion`; \
             	    sc=`grep -c "sse4" /proc/cpuinfo`; \
-                	echo $$sc.$$gv | awk -F. '{if($$1>0 && $$2>=4 && $$3>=4) print "-DSSE4=1 -msse4.2"; else print "-DSSE4=0"}'))
+                	echo $$sc.$$gv | awk -F. '{if($$1>0 && ($$2>4 || ($$2==4 && $$3>=4))) print "-DSSE4=1 -msse4.2"; else print "-DSSE4=0"}'))
 endif
 else
 ifeq ($(with-sse4),no)
@@ -77,6 +77,6 @@ else
         $(eval CFLAGS = $(CFLAGS) \
         $(shell gv=`$(CC) -dumpversion`; \
                 sc=`sysctl -n machdep.cpu.features | grep -c "SSE4"` ;\
-                echo $$sc.$$gv | awk -F. '{if($$1>0 && $$2>=4 && $$3>=4) print "-DSSE4=1 -msse4.2"; else print "-DSSE4=0"}'))
+                echo $$sc.$$gv | awk -F. '{if($$1>0 && ($$2>4 || ($$2==4 && $$3>=4))) print "-DSSE4=1 -msse4.2"; else print "-DSSE4=0"}'))
 endif
 endif
