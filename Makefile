@@ -21,7 +21,7 @@ else
 endif
 
 snp_indexer: clean_executables SNPIndexer.o
-	$(CC) SNPIndexer.o -o $@ ${LDFLAGS} ${LIBS}
+	$(CC) -no-pie SNPIndexer.o -o $@ ${LDFLAGS} ${LIBS}
 
 clean_objects: mrsfast snp_indexer
 	@rm -f $(objects)
