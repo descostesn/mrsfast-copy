@@ -1,4 +1,4 @@
-MRSFAST_VERSION := "3.4.2"
+MRSFAST_VERSION := "3.4.3"
 BUILD_DATE := "$(shell date)"
 
 CC?= gcc
