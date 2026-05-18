@@ -432,6 +432,7 @@ int initRead(char *fileName1, char *fileName2)
 		_r_buf2 = getMem(10000000);
 		_r_buf2_pos = getMem(sizeof(int));
 		_r_buf2_size = getMem(sizeof(int));
+		*_r_buf2_size = *_r_buf2_pos = 0;
 	}
 	else
 	{
